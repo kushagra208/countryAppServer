@@ -2,7 +2,6 @@ import { User } from "../models/User.js";
 import { sendMail } from "../utils/sendMail.js";
 import { sendToken } from "../utils/sendToken.js";
 import cloudinary from "cloudinary";
-import fs from "fs";
 
 export const register = async (req, res) => {
     try {
@@ -21,8 +20,6 @@ export const register = async (req, res) => {
       const otp = Math.floor(Math.random() * 1000000);
   
       const mycloud = await cloudinary.v2.uploader.upload(avatar);
-  
-      fs.rmSync("./tmp", { recursive: true });
   
       user = await User.create({
         name,
