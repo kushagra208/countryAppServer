@@ -138,7 +138,6 @@ export const logout = async (req , res) => {
             await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
             const mycloud = await cloudinary.v2.uploader.upload(avatar);
-            fs.rmSync("./tmp" , { recursive: true });
 
             user.avatar = {
                 public_id: mycloud.public_id,
