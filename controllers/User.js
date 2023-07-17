@@ -1,7 +1,6 @@
 import { User } from "../models/User.js";
 import { sendMail } from "../utils/sendMail.js";
 import { sendToken } from "../utils/sendToken.js";
-import cloudinary from "cloudinary";
 
 export const register = async (req, res) => {
     try {
@@ -20,7 +19,6 @@ export const register = async (req, res) => {
         name,
         email,
         password,
-
         otp,
         otp_expiry: new Date(Date.now() + process.env.OTP_EXPIRE * 60 * 1000),
       });
