@@ -2,16 +2,11 @@ import { User } from "../models/User.js";
 import { sendMail } from "../utils/sendMail.js";
 import { sendToken } from "../utils/sendToken.js";
 import cloudinary from "cloudinary";
-// import fs from "fs";
 
 export const register = async (req, res) => {
     try {
       const { name, email, password } = req.body;
-  
-      const avatar = req.files.data.path;
-      console.log(req.files.data.path);
       let user = await User.findOne({ email });
-  
       if (user) {
         return res
           .status(400)
@@ -20,18 +15,12 @@ export const register = async (req, res) => {
   
       const otp = Math.floor(Math.random() * 1000000);
   
-      const mycloud = await cloudinary.v2.uploader.upload(avatar);
-  
-    //   fs.rmSync("./tmp", { recursive: true });
-  
+
       user = await User.create({
         name,
         email,
         password,
-        avatar: {
-          public_id: mycloud.public_id,
-          url: mycloud.secure_url,
-        },
+
         otp,
         otp_expiry: new Date(Date.now() + process.env.OTP_EXPIRE * 60 * 1000),
       });
@@ -134,20 +123,9 @@ export const logout = async (req , res) => {
         const user = await User.findById(req.user._id);
 
         const { name } = req.body;
-        const avatar = req.files.avatar.tempFilePath;
 
         if(name) user.name = name;
-        if(avatar){
-            await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
-            const mycloud = await cloudinary.v2.uploader.upload(avatar);
-            // fs.rmSync("./tmp" , { recursive: true });
-
-            user.avatar = {
-                public_id: mycloud.public_id,
-                url: mycloud.secure_url,
-            };
-        }
         await user.save();
         res.status(200).json({ success: true , message: "Profile Updated Successfully"})
         } catch (error) {
@@ -160,8 +138,6 @@ export const logout = async (req , res) => {
         const user = await User.findById(req.user._id).select("+password");
 
         const { oldPassword , newPassword } = req.body;
-        // const { avatar } = req.files;
-
         if(!oldPassword || !newPassword) {
             return res
             .status(400)
